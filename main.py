@@ -1,22 +1,27 @@
-# Hello all. Just so you know I am an inexperienced coder.
-# I will probably implement everything in the worst possible way.
-# But I would like to learn from you and see the way you do things and the way you implement things.
-# So hopefully this ends up being a good project for all of us.
+import random
+from helpers.timer import CustomTimer
+import datetime
 
-# Someone should find a library to record timing better than this method with the timer.
-timer = 0
 population = 0
-total_births = 0
-total_deaths = 0
 
-while True:
-	timer += 1
-	if timer % 200000 == 0:
-		total_births += 1
-		population += 1
-	if timer % 500000 == 0:
-		total_deaths += 1
-		population -= 1
-	if timer > 1000000:
-		print("%s people have been born. %s people have died. The population is %s." %(total_births,total_deaths,population))
-		timer = 0
+
+def birth_count():
+	global population
+	random.seed(datetime.datetime.now())
+	births = random.randint(5, 10)  # generates a random number of births every time
+	population += births
+	print(f'Current population is {population} after {births} births')
+
+
+def death_count():
+	global population
+	random.seed(datetime.datetime.now())
+	deaths = random.randint(1, 5)  # generates a random number of deaths every time
+	population -= deaths
+	print(f'Current population is {population} after {deaths} deaths')
+
+
+birth = CustomTimer(interval=3, function=birth_count)  # runs every 3 seconds
+death = CustomTimer(5, death_count)  # runs every 5 seconds, since death rate is slower than birth rate
+birth.start()  # starts the birth timer
+death.start()  # starts the death timer
