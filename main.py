@@ -6,19 +6,25 @@ population = 0
 
 
 def birth_count():
-	global population
-	random.seed(datetime.datetime.now())
-	births = random.randint(5, 10)  # generates a random number of births every time
-	population += births
-	print(f'Current population is {population} after {births} births')
+    global population
+    random.seed(datetime.datetime.now())
+    if population < 1000:  # since we can't use percentages if the amount of people is low, there are hard values to the births
+        births = random.randint(5, 10)
+    else:
+        births = random.randint(round(population/200), round(population/50))
+    population += births
+    print(f'Current population is {population} after {births} births')
 
 
 def death_count():
-	global population
-	random.seed(datetime.datetime.now())
-	deaths = random.randint(1, 5)  # generates a random number of deaths every time
-	population -= deaths
-	print(f'Current population is {population} after {deaths} deaths')
+    global population
+    random.seed(datetime.datetime.now())
+    if population < 1000:
+        deaths = random.randint(1, 5)  # generates a random number of deaths every time, same way as births
+    else:
+        deaths = random.randint(round(population/250), round(population/100))
+    population -= deaths
+    print(f'Current population is {population} after {deaths} deaths')
 
 
 def main_loop():
