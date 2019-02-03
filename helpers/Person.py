@@ -17,10 +17,33 @@ class Person:
         self.weight = round(random.uniform(2.5, 4.5), 1)    # Weight is in Kilograms.
 
     def pickName(self, gender):
-    # TODO: Replace generic names with random/procedurally generated names.
-        if self.gender == 'Male':
-            return "John Doe"
-
-        elif self.gender == "Female":
-            return "Jane Doe"
+        """
+        Input: gender, one of : 'male' , 'female'
+        Output: A random full name  (string)
+        Example use:
+        pickName('female') will return a female name as string.
+        """
+        def load_names(filename):
+            """
+            Input: Name of file that contains a single name per line (string)
+            Output: List of all the names in file with \n removed from the end (string list)
+            """
+            namelist = []
+            with open(filename, 'r') as f:
+                for line in f:
+                    namelist.append(line.strip('\n'))
+            return namelist
+            
+        if gender.lower() == 'male':
+            firstnames = load_names('male_firstnames.txt')
+        elif gender.lower() == 'female':
+            firstnames = load_names('female_firstnames.txt')
+        else:
+            return "NO GENDER"
+        lastnames = load_names('lastnames.txt')
+        # Sizes of the firstnames and lastnames lists:
+        first = random.choice(firstnames)
+        last = random.choice(lastnames)
+        fullname = ''.join((first,' ', last))
+        return fullname
 
