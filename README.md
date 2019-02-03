@@ -12,6 +12,8 @@ python3
 mm103434
 KIRA009
 yodigi7
+ShadowMuffin
+Translucent504
 
 ## License
 We still need to determine what license this code should be under, I recommend GPLv3
