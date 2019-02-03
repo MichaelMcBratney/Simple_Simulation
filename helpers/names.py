@@ -18,17 +18,17 @@ def get_name(Gender):
     Example use:
     get_name('female') will return a female name as string.
     """
-    if Gender == 'male':
+    if Gender.lower() == 'male':
         firstnames = load_names('male_firstnames.txt')
-    elif Gender == 'female':
+    elif Gender.lower() == 'female':
         firstnames = load_names('female_firstnames.txt')
+    else:
+        return "NO GENDER"
     lastnames = load_names('lastnames.txt')
     # Sizes of the firstnames and lastnames lists:
-    fnamesize = len(firstnames) - 1
-    lnamesize = len(lastnames) - 1
-    first = firstnames[random.randint(0, fnamesize)]
-    last = lastnames[random.randint(0, lnamesize)]
+    first = random.choice(firstnames)
+    last = random.choice(lastnames)
     fullname = ''.join((first,' ', last))
-    return fullname 
-           
+    return fullname
+
 
