@@ -5,8 +5,7 @@ import random, datetime
 
 
 class Person:
-    def __init__(self, gender=None,adult_height=None, adult_weight=None, ethnicity=None, reproductive_age=None, age=0):
-        random.seed(datetime.datetime.now())
+    def __init__(self, name=None, gender=None,adult_height=None, adult_weight=None, ethnicity=None, reproductive_age=None, age=0):
         possible_genders = ['Male',"Female"]
         possible_ethnicities = ["European", "African-American", "African", "Asian", "Latino", "Jewish", "Arab", "Indigenous"] #TODO: make ethnicities more abstract
         self.age = age
@@ -77,6 +76,9 @@ class Person:
         fullname = ''.join((first,' ', last))
         return fullname
 
+    def getInfo(self):
+        print(f'{self.name} is {self.age} years old, is a {self.gender}, and is {self.ethnicity}. They are {self.height} meters tall, and {self.weight} kilograms. They will reach their reproductive age at {self.reproductive_age} years old.')
+
 def breed(person1, person2):
     if person1.age >= person1.reproductive_age and person2.age >= person2.reproductive_age:
         if person1.gender != person2.gender:
@@ -95,3 +97,15 @@ def breed(person1, person2):
             
 
             return Person(gender=gender, adult_height=adult_height,adult_weight=adult_weight, ethnicity=ethnicity, reproductive_age=reproductive_age)
+
+'''     
+Test1 = Person()
+Test2 = Person()
+Test3 = Person()
+
+Test1.getInfo()
+Test2.getInfo()
+Test3.getInfo()
+
+#Uncomment these lines to test Person Function.
+'''
