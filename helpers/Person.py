@@ -1,7 +1,6 @@
 # TODO: need to add more to the person class
 #  what things should they be able to do?
 #  what are all of their characteristics?
-#  add a way to procedurally generate names
 import random, datetime
 
 
@@ -18,7 +17,7 @@ class Person:
         self.weight = round(random.uniform(2.5, 4.5), 1)    # Weight is in Kilograms.
 
     def pickName(self, gender):
-    # Replace generic names with random.procedurally generated names.
+    # TODO: Replace generic names with random/procedurally generated names.
         if self.gender == 'Male':
             return "John Doe"
 
