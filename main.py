@@ -1,5 +1,5 @@
 from controller import Controller
-from sim_objs.person.personClass.person import Person
+from sim_objs import Person
 from model import Model
 
 

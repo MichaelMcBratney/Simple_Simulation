@@ -2,10 +2,13 @@
 #  what things should they be able to do?
 #  what are all of their characteristics?
 import random, datetime
+import os
+from .sim_obj import SimObj
+from definitions import RESOURCES_DIR
 from pathlib import Path
 
 
-class Person:
+class Person(SimObj):
     def __init__(self, name=None, gender=None,adult_height=None, adult_weight=None, ethnicity=None, reproductive_age=None, age=0):
         possible_genders = ['Male',"Female"]
         possible_ethnicities = ["European", "African-American", "African", "Asian", "Latino", "Jewish", "Arab", "Indigenous"] #TODO: make ethnicities more abstract
@@ -63,28 +66,25 @@ class Person:
         Example use:
         pickName('female') will return a female name as string.
         """
-        def load_names(rel_path_name, filename):
+        def load_names(filename):
             """
             Input: Name of file that contains a single name per line (string)
             Output: List of all the names in file with \n removed from the end (string list)
             """
             namelist = []
-            script_location = Path(rel_path_name).absolute().parent
-            # print(script_location)            print debugging for if weird path errors are thrown.
-            file_location = script_location / filename
-            # print(file_location)            print debugging for if weird path errors are thrown.
+            file_location = os.path.join(RESOURCES_DIR, filename)
             with open(file_location, 'r') as f:
                 for line in f:
                     namelist.append(line.strip('\n'))
             return namelist
             
         if gender.lower() == 'male':
-            firstnames = load_names('.\\sim_objs\\person\\male_firstnames.txt', 'male_firstnames.txt')
+            firstnames = load_names('male_firstnames.txt')
         elif gender.lower() == 'female':
-            firstnames = load_names('.\\sim_objs\\person\\female_firstnames.txt', 'female_firstnames.txt')
+            firstnames = load_names('female_firstnames.txt')
         else:
             return "NO GENDER"
-        lastnames = load_names('.\\sim_objs\\person\\lastnames.txt', 'lastnames.txt')
+        lastnames = load_names('lastnames.txt')
         # Sizes of the firstnames and lastnames lists:
         first = random.choice(firstnames)
         last = random.choice(lastnames)
@@ -100,7 +100,7 @@ class Person:
             self.pronoun2 = "her"
         print(f'{self.name} is {round(self.age, 3)} years old, is a {self.gender}, and is {self.ethnicity}. {self.pronoun1} is {self.height} meters tall, and {self.weight} kilograms. {self.pronoun1} will reach {self.pronoun2} reproductive age at {self.reproductive_age} years old.')
 
-    def age_up(self):
+    def update(self):
         self.age = float(self.age)
         self.age += (1/365)
         if self.age < 1:

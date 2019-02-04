@@ -38,7 +38,7 @@ class Model():
         """update each simulated object by #hours worth of time"""
 
         for _ in range(hours):
-            for obj in self.sim_objs: obj.age_up()
+            for obj in self.sim_objs: obj.update()
             self.time += 1
             
 
