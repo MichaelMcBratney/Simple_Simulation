@@ -4,10 +4,12 @@ from model import Model
 
 
 def main():
+    num_people = 3 # Change this variable to however many people you wish to run the simulation with.
+    initial_people = []
+    for i in range(num_people):
+        initial_people.append(Person())
 
-    # Initialize for now with a few people. This should not be the final place for this
-    # sort of thing, I am just putting this code here for now
-    Model.get().sim_objs += [Person(), Person(), Person()]
+    Model.get().sim_objs += initial_people
 
     Controller().run()
 
