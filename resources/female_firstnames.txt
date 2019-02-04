@@ -4,6 +4,7 @@ Barbie
 Madonna
 Sophia
 Olivia
+Stella
 Emily
 Jennifer
 Ava
@@ -19,4 +20,5 @@ Leah
 Victoria
 Luna
 Grace
+Caroline
 Madelyn

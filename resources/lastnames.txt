@@ -4,12 +4,15 @@ Krane
 Newton
 Smith
 Jones
+Walther
+Andersson
 Cohen
 Williams
 Brown
 Davis
 Miller
 Wilson
+Christoffersen
 Garcia
 Rodriguez
 Hernandez
@@ -25,3 +28,5 @@ Li
 King
 Kumar
 Nguyen
+Liberoth
+

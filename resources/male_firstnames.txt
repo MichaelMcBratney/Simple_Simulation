@@ -2,6 +2,7 @@ Adam
 Bob
 Charlie
 James
+Victor
 Jacob
 Jackson
 Noah
@@ -16,6 +17,7 @@ Jayden
 Muhammed
 Carter
 Benjamin
+Frederik
 Ryan
 Robert
 Caleb
@@ -24,5 +26,6 @@ Jack
 Owen
 Samuel
 Nathan
+Jan
 John
 David
