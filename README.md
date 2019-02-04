@@ -15,6 +15,8 @@ KIRA009
 yodigi7
 ShadowMuffin
 Translucent504
+FrederikWLC
+dwdineen
 
 ## License
 GPLv3
