@@ -17,7 +17,7 @@ ShadowMuffin
 Translucent504
 
 ## License
-We still need to determine what license this code should be under, I recommend GPLv3
+GPLv3
 
 
 
