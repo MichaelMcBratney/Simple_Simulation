@@ -4,7 +4,7 @@
 import random, datetime
 import os
 from .sim_obj import SimObj
-from definitions import RESOURCES_DIR
+from definitions import RESOURCES_DIR, DEATH_PROBS, CHANCE_OF_DEATH
 from pathlib import Path
 
 
@@ -12,6 +12,11 @@ class Person(SimObj):
     def __init__(self, name=None, gender=None,adult_height=None, adult_weight=None, ethnicity=None, reproductive_age=None, age=0):
         possible_genders = ['Male',"Female"]
         possible_ethnicities = ["European", "African-American", "African", "Asian", "Latino", "Jewish", "Arab", "Indigenous"] #TODO: make ethnicities more abstract
+        
+        # Set state of person to one of : 'alive' or 'deceased'.
+        self.state = "alive"
+        self.death_cause = None
+
         #Initialize age
         self.age = age
 
@@ -98,15 +103,51 @@ class Person(SimObj):
         elif self.gender.lower() == "female":
             self.pronoun1 = "She"
             self.pronoun2 = "her"
-        print(f'{self.name} is {round(self.age, 3)} years old, is a {self.gender}, and is {self.ethnicity}. {self.pronoun1} is {self.height} meters tall, and {self.weight} kilograms. {self.pronoun1} will reach {self.pronoun2} reproductive age at {self.reproductive_age} years old.')
+        if self.state == "alive":
+            print(f'{self.name} is {round(self.age, 3)} years old, is a {self.gender}, and is {self.ethnicity}. {self.pronoun1} is {self.height} meters tall, and {self.weight} kilograms. {self.pronoun1} will reach {self.pronoun2} reproductive age at {self.reproductive_age} years old.')
+        elif self.state == "deceased":
+            print(f'{self.name} died at age {round(self.age, 3)}, was a {self.gender}, and was {self.ethnicity}. {self.pronoun1} was {self.height} meters tall, and weighed {self.weight} kilograms. {self.pronoun2} cause of death was {self.death_cause}')
+    
+    def kill(self, cause):
+        """
+        Kills this person
+        Input: Cause of death (string)
+        """
+        if self.state == 'alive':
+            self.state = 'deceased'
+            self.death_cause = cause
 
-    def update(self):
-        self.age = float(self.age)
-        self.age += (1/365)
+    def decide_fate(self):
+        """
+        Decides if person dies of some cause. CHANCE_OF_DEATH chance of coming close to death at a given day
+        """
+        if random.randint(1,1000) >= CHANCE_OF_DEATH:
+            return None
+        deathprobs = DEATH_PROBS[self.gender.lower()]
+        for cause, prob in deathprobs.items():
+            if random.randint(1, 100) <= round(prob['chance']*100 + prob['age_factor']*self.age):
+                return cause
+        return None    
+
+    def get_age_string(self):
         if self.age < 1:
-            print(f'{self.name} is {round(self.age * 365)} days old.')
+            return ' '.join((str(round(self.age * 365)),'days'))
         else:
-            print(f'{self.name} is {round(self.age, 1)} years old.')
+            return ' '.join((str(round(self.age, 1)),'years')) 
+        
+    def update(self):
+        if self.state == "alive":
+            self.age = float(self.age)
+            self.age += (1/365)
+            cause_of_death = self.decide_fate()
+            if cause_of_death:
+                self.kill(cause_of_death)
+                print(f'{self.name} has died due to {cause_of_death} at {self.get_age_string()} old.')
+            # Should only print age when getInfo is called
+            #if self.age < 1:
+            #    print(f'{self.name} is {round(self.age * 365)} days old.')
+            #else:
+            #    print(f'{self.name} is {round(self.age, 1)} years old.')
 
 def breed(person1, person2):
     if person1.age >= person1.reproductive_age and person2.age >= person2.reproductive_age:
