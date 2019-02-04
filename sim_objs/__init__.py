@@ -1,1 +1,1 @@
-from .person.personClass.person import Person
+from .person import Person
