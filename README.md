@@ -10,13 +10,13 @@ python3
 3. Type your command followed by a space and then the argument.
 
 ## Contributors
-mm103434
-KIRA009
-yodigi7
-ShadowMuffin
-Translucent504
-FrederikWLC
-dwdineen
+#mm103434
+#KIRA009
+#yodigi7
+#ShadowMuffin
+#Translucent504
+#FrederikWLC
+#dwdineen
 
 ## License
 GPLv3
