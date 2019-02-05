@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 class Person(SimObj):
-    def __init__(self, name=None, gender=None,adult_height=None, adult_weight=None, ethnicity=None, reproductive_age=None, age=0):
+    def __init__(self, name=None, genes=None, age=0):
         possible_genders = ['Male',"Female"]
         possible_ethnicities = ["European", "African-American", "African", "Asian", "Latino", "Jewish", "Arab", "Indigenous"] #TODO: make ethnicities more abstract
         
@@ -20,46 +20,50 @@ class Person(SimObj):
         #Initialize age
         self.age = age
 
-        #Calculate gender
-        if gender:
-            self.gender = gender
-        else:
-            self.gender = random.choice(possible_genders)
-
-        # Calculate reproductive age
-        if reproductive_age:
-            self.reproductive_age = reproductive_age
-        else:
-            if self.gender == "Male":
-                self.reproductive_age = round(random.uniform(13,17), 1)
-            elif self.gender == "Female":
-                self.reproductive_age = round(random.uniform(11,16), 1)
-        #		Calculate name
+        #Calculate name
         if name:
             self.name = name
         else:
             self.name = self.pickName(self.gender)
-        # 		Calculate ethnicity
-        if ethnicity:
-            self.ethnicity = ethnicity
+
+        # If the parameter, "genes" is specified, the information in
+        # the parameter will be translated and assigned to the person class's instances.
+        # Else both the genes and the translated assigned instances will be randomly generated.
+        if genes:
+            self.genes = genes
+            self.gender = possible_genders[genes[0]]
+            self.ethnicity = possible_ethnicities[genes[1]]
+            self.reproductive_age = genes[2]
+            self.adult_height = genes[3]
+            self.adult_weight = genes[4]
         else:
-            self.ethnicity = random.choice(possible_ethnicities)
-        #		Calculate Height
-        if adult_height:
-            self.adult_height = adult_height
-        else:
+            #Calculate Gender
+            gender = random.randint(0,1)
+            self.gender = possible_genders[gender]
+
+            # Calculate Reproductive Age
+            if self.gender == "Male":
+                self.reproductive_age = round(random.uniform(13,17), 1)
+            elif self.gender == "Female":
+                self.reproductive_age = round(random.uniform(11,16), 1)
+            
+            # Calculate Ethnicity
+            ethnicity = random.randint(0,len(possible_ethnicities)-1)
+            self.ethnicity = possible_ethnicities[ethnicity]
+
+            # Calculate Adult Height
             if self.gender == "Male":
                 self.adult_height = round(random.uniform(1.6,2.1), 1) # Height is in Meters.
             elif self.gender == "Female":
                 self.adult_height = round(random.uniform(1.5,1.9), 1) # Height is in Meters.
-        # 		Calculate Weight
-        if adult_weight:
-            self.adult_weight = adult_weight
-        else:
+
+            # Calculate Adult Weight
             if self.gender == "Male":
                 self.adult_weight = round(random.uniform(50,110), 1) # Weight is in Kilograms
             elif self.gender == "Female":
                 self.adult_weight = round(random.uniform(50,100), 1) # Weight is in Kilograms
+
+            self.genes = [gender, ethnicity, reproductive_age, adult_height, adult_weight]
 
         self.height = round(random.uniform(0.4, 0.6), 1) # Height is in Meters.    
         self.weight = round(random.uniform(2.5, 4.5), 1) # Weight is in Kilograms
@@ -150,23 +154,17 @@ class Person(SimObj):
             #    print(f'{self.name} is {round(self.age, 1)} years old.')
 
 def breed(person1, person2):
-    if person1.age >= person1.reproductive_age and person2.age >= person2.reproductive_age:
-        if person1.gender != person2.gender:
-            if person1.gender != "Male":
-                person1, person2 = person2, person1
-            ethnicity = random.choice((person1.ethnicity,person2.ethnicity)) #TODO: make ethnicities more abstract
-            gender = random.choice(['Male',"Female"])
-            if gender == "Male":
-                adult_height = round((person1.adult_height + person2.adult_height+13)/2,1)
-                adult_weight = round((person1.adult_weight+person2.adult_weight+13)/2,1)
-                reproductive_age = round((person1.reproductive_age+person2.reproductive_age+3))
-            elif gender == "Female":
-                adult_height = round((person1.adult_height + person2.adult_height-13)/2,1)
-                adult_weight = round((person1.adult_weight+person2.adult_weight-13)/2,1)
-                reproductive_age = round((person1.reproductive_age+person2.reproductive_age-3))
-            
-
-            return Person(gender=gender, adult_height=adult_height,adult_weight=adult_weight, ethnicity=ethnicity, reproductive_age=reproductive_age)
+    new_genes = []
+    testament = list(map(random.choice((lambda x: x, lambda x: x * -1)), [[] if is_iterable(i) else 1 if i % 2 == 0 else -1 for i in range(len(person1.genes))]))
+    for aj, bj in zip(person1.genes, person2.genes):
+        if is_iterable(aj):
+            new_genes.append(breed(aj, bj))
+            continue
+        translator = {-1: aj, 1: bj}
+        chosen_succesor = random.choice(testament)
+        testament.pop(testament.index(chosen_succesor))
+        new_genes.append(translator[chosen_succesor])
+    return Person(genes=new_genes)
 
 '''     
 Test1 = Person()
