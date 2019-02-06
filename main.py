@@ -6,9 +6,7 @@ from definitions import NUM_PEOPLE, TOTAL_PEOPLE
 
 def main():
     for i in range(NUM_PEOPLE):
-        TOTAL_PEOPLE.append(Person())
-
-    Model.get().sim_objs += TOTAL_PEOPLE
+        Model.get().sim_objs.append(Person())
 
     Controller().run()
 
