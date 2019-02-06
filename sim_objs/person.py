@@ -3,24 +3,39 @@
 #  what are all of their characteristics?
 import random, datetime
 import os
+import csv
 from model import Model
 from .sim_obj import SimObj
-from definitions import RESOURCES_DIR, DEATH_PROBS, CHANCE_OF_DEATH
+from definitions import RESOURCES_DIR, DEATH_PROBS, CHANCE_OF_ILLNESS, REPRODUCTIVE_MAX
 from pathlib import Path
 from collections import Iterable
 
 
 class Person(SimObj):
-    def __init__(self, name=None, genes=None, age=0):
+    def __init__(self, name=None, genes=None, age=0.0):
         possible_genders = ['Male',"Female"]
         possible_ethnicities = ["European", "African-American", "African", "Asian", "Latino", "Jewish", "Arab", "Indigenous"] #TODO: make ethnicities more abstract
         
+        
+        # Initialize Health status:
+        self.health = {}
         # Set state of person to one of : 'alive' or 'deceased'.
-        self.state = "alive"
-        self.death_cause = None
-
-        #Initialize age
-        self.age = age
+        self.health['state'] = 'alive'
+        self.health['death_cause'] = None
+        self.health['age'] = age
+        # Height is in Meters.
+        self.health['height'] = round(random.uniform(0.4, 0.6), 1)
+        # Weight is in Kilograms     
+        self.health['weight'] = round(random.uniform(2.5, 4.5), 1) 
+        # Ability to reproduce
+        self.health['fertile'] = False 
+        # Illnesses
+        self.health['afflictions'] = {}
+        
+        # Initialize Social status
+        # Placeholder dictionary for relationships etc.
+        self.social = {}
+        self.social['spouse'] = None
 
         # If the parameter, "genes" is specified, the information in
         # the parameter will be translated and assigned to the person class's instances.
@@ -70,8 +85,7 @@ class Person(SimObj):
             self.name = self.pickName(self.gender)
 
 
-        self.height = round(random.uniform(0.4, 0.6), 1) # Height is in Meters.    
-        self.weight = round(random.uniform(2.5, 4.5), 1) # Weight is in Kilograms
+        
 
     def pickName(self, gender):
         """
@@ -112,63 +126,134 @@ class Person(SimObj):
         elif self.gender.lower() == "female":
             self.pronoun1 = "She"
             self.pronoun2 = "her"
-        if self.state == "alive":
-            print(f'{self.name} is {round(self.age, 3)} years old, is a {self.gender}, and is {self.ethnicity}. {self.pronoun1} is {self.height} meters tall, and {self.weight} kilograms. {self.pronoun1} will reach {self.pronoun2} reproductive age at {self.reproductive_age} years old.')
-        elif self.state == "deceased":
-            print(f'{self.name} died at age {round(self.age, 3)}, was a {self.gender}, and was {self.ethnicity}. {self.pronoun1} was {self.height} meters tall, and weighed {self.weight} kilograms. {self.pronoun2} cause of death was {self.death_cause}')
+        if self.health['state'] == "alive":
+            print(f"{self.name} is {round(self.health['age'], 1)} years old, is a {self.gender}, and is {self.ethnicity}. {self.pronoun1} is {round(self.health['height'],2)} meters tall, and {round(self.health['weight'],2)} kilograms. {self.pronoun1} will reach {self.pronoun2} reproductive age at {self.reproductive_age} years old.")
+        elif self.health['state'] == "deceased":
+            print(f"{self.name} died at age {round(self.health['age'], 1)}, was a {self.gender}, and was {self.ethnicity}. {self.pronoun1} was {round(self.health['height'],2)} meters tall, and weighed {round(self.health['weight'],2)} kilograms. {self.pronoun2} cause of death was {self.health['death_cause']}")
     
     def kill(self, cause):
         """
         Kills this person
         Input: Cause of death (string)
         """
-        if self.state == 'alive':
-            self.state = 'deceased'
-            self.death_cause = cause
+        if self.health['state'] == 'alive':
+            self.health['state'] = 'deceased'
+            self.health['death_cause'] = cause
 
-    def decide_fate(self):
+    def get_sick(self):
         """
-        Decides if person dies of some cause. CHANCE_OF_DEATH chance of coming close to death at a given day
+        Decides if person gets an illness with CHANCE_OF_ILLNESS chance of getting terminal illness.
+        Output: returns a dict with illness and days till death. 
+        Example: {'Cardiovascular Disease': 1000}
         """
-        if random.randint(1,1000) >= CHANCE_OF_DEATH:
+        if random.randint(1,20000) >= CHANCE_OF_ILLNESS:
             return None
-        deathprobs = DEATH_PROBS[self.gender.lower()]
-        for cause, prob in deathprobs.items():
-            if random.randint(1, 100) <= round(prob['chance']*100 + prob['age_factor']*self.age):
-                return cause
-        return None    
+        fileloc = os.path.join(RESOURCES_DIR, self.gender.lower()+'_illnesses.csv')
+        
+        with open(fileloc,'r', newline='') as f:
+            reader = csv.reader(f, delimiter=',')
+            for row in reader:
+                # illness file structure:
+                # [0]name, [1]min, [2]max, [3]duration
+                if self.health['age'] >= int(row[1]) and self.health['age'] <= int(row[2]):
+                    self.health['afflictions'][row[0]] = int(row[3])
+                    print(f"{self.name} has contracted {row[0]}.")
+                    return None   
 
     def get_age_string(self):
-        if self.age < 1:
-            return ' '.join((str(round(self.age * 365)),'days'))
+        if self.health['age'] < 1:
+            return ' '.join((str(round(self.health['age'] * 365)),'days'))
         else:
-            return ' '.join((str(round(self.age, 1)),'years')) 
+            return ' '.join((str(round(self.health['age'], 1)),'years')) 
+    
+    def get_health(self, parameter=None):
+        '''
+        Returns the person's health parameter
+        Output: The parameter from self.health['parameter']
+        If no parameter specified then returns dictionary of health status.
+        '''
+        if parameter:
+            return self.health[parameter]
+        else:
+            return self.health
+    
+    def treat_illnesses(self):
+        '''
+        Removes person's illness
         
-    def update(self):
-        if self.state == "alive":
-            self.age = float(self.age)
-            self.age += (1/365)
-            cause_of_death = self.decide_fate()
-            if cause_of_death:
-                self.kill(cause_of_death)
-                print(f'{self.name} has died due to {cause_of_death} at {self.get_age_string()} old.')
+        Input: illness (string) The illness to remove           
+        '''
+        afflictions = list(self.health['afflictions'].keys())
+        x = random.choice(afflictions)
+        _ = self.health['afflictions'].pop(x)
+        print(f"{self.name} has received medical treatment for {x}")
 
+
+    def update_health(self):
+        '''
+        Updates person's health status.
+        afflictions, pregnancies etc.
+        '''
+        if self.health['state'] == "alive":
+            self.health['age'] += (1.0/365)
+            if self.health['weight'] <= self.adult_weight:
+                self.health['weight'] += round(random.uniform(-0.01, 0.05), 2)
+            if self.health['height'] <= self.adult_height:
+                self.health['height'] += round(random.uniform(0, 0.0002), 4)
+            if self.health['fertile'] and self.health['age'] >= REPRODUCTIVE_MAX:
+                # Lose ability to reproduce due to old age.
+                self.health['fertile'] = False
+                print(f"{self.name} can no longer reproduce")                
+            elif not self.health['fertile']:
+                if self.health['age'] >= self.reproductive_age and self.health['age'] < REPRODUCTIVE_MAX:
+                    # Gain ability to reproduce if young and reached reproductive age.
+                    self.health['fertile'] = True
+                    print(f"{self.name} can now reproduce!")
+            if not self.health['afflictions']:
+                self.get_sick()
+            else:
+                if random.randint(1,1500) <= 2:
+                    self.treat_illnesses()
+                for illness in self.health['afflictions'].keys():
+                    self.health['afflictions'][illness] -= 1
+                    if not self.health['afflictions'][illness]:
+                        self.kill(illness)
+                        print(f'{self.name} has died due to {illness} at {self.get_age_string()} old.')
+            # Check for and update pregnancy state.
+            # Uncomment after social structure of spouses/relationships implemented.
+            # if self.gender.lower() == 'female':
+            #     try:
+            #         if self.health['pregnant']:
+            #             self.health['pregnant'] -= 1
+            #             if self.health['pregnant'] == 0:
+            #                 Model.get().sim_objs.append(breed(self, self.social['spouse']))
+            #                 print(f"{self.name} gave birth to a baby {Model.get().sim_objs[-1].gender} named {Model.get().sim_objs[-1].name}.")
+            #     except KeyError:
+            #         self.health['pregnant'] = None
+
+
+    def update_social(self):
+        ''' 
+        Placeholder for social updates of person
+        Relationships etc
+        '''
+        pass
+
+    def update(self):
+        self.update_health()
+        self.update_social()
+            
         parent1 = random.choice(Model.get().sim_objs)
         parent2 = random.choice(Model.get().sim_objs)
         while parent1 == parent2:
             parent2 = random.choice(Model.get().sim_objs)
 
         if parent1.gender != parent2.gender:
-            if parent1.age >= parent1.reproductive_age and parent2.age >= parent2.reproductive_age:
+            if parent1.health['age'] >= parent1.reproductive_age and parent2.health['age'] >= parent2.reproductive_age:
                 if random.randint(0, 100) <= 2:
                     Model.get().sim_objs.append(breed(parent1, parent2))
                     print(f"{parent1.name} and {parent2.name} gave birth to a baby {Model.get().sim_objs[-1].gender} named {Model.get().sim_objs[-1].name}.")
 
-            # Should only print age when getInfo is called
-            #if self.age < 1:
-            #    print(f'{self.name} is {round(self.age * 365)} days old.')
-            #else:
-            #    print(f'{self.name} is {round(self.age, 1)} years old.')
 
 def breed(person1, person2):
     #print(person1) Debugging
