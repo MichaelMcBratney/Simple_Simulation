@@ -21,10 +21,10 @@ class Controller:
             if command[0] == 'quit': return
 
             elif command[0] == 'run':
-                try:
-                    Model.get().run(int(command[1]))
-                except:
-                    print("\nINVALID INPUT\nExpected usage: run DAYS \nWhere DAYS is a positive integer\n")
+                #try:
+                Model.get().run(int(command[1]))
+                #except:
+                    #print("\nINVALID INPUT\nExpected usage: run DAYS \nWhere DAYS is a positive integer\n")
 
             elif command[0] == 'info':
                 try:

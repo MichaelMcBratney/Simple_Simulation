@@ -5,7 +5,7 @@ from definitions import NUM_PEOPLE
 
 
 def main():
-    for _ in range(NUM_PEOPLE):
+    for _ in range(NUM_PEOPLE): 
         Model.get().sim_objs.append(Person())
 
     Controller().run()

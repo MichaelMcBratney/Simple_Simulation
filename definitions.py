@@ -11,6 +11,8 @@ DEATH_PROBS = {'male':{'Cardiovascular disease':{'chance':0.0128, 'age_factor':0
                         'Maternal condition':{'chance':0.0073,'age_factor':0.05}, 
                         'Cardiovascular disease':{'chance':0.0107,'age_factor':0.04},
                         'Diarrhoea':{'chance':0.0107,'age_factor':0.02}}}
-CHANCE_OF_DEATH = 2
+CHANCE_OF_ILLNESS = 2
 
 NUM_PEOPLE = 10 # Change this variable to however many people you wish to run the simulation with.
+
+REPRODUCTIVE_MAX = 45 # Age after which people cannot reproduce
