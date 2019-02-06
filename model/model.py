@@ -40,5 +40,4 @@ class Model():
         for _ in range(hours):
             for obj in self.sim_objs: obj.update()
             self.time += 1
-            
 
