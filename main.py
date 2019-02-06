@@ -1,15 +1,14 @@
 from controller import Controller
 from sim_objs import Person
 from model import Model
+from definitions import NUM_PEOPLE, TOTAL_PEOPLE
 
 
 def main():
-    num_people = 3 # Change this variable to however many people you wish to run the simulation with.
-    initial_people = []
-    for i in range(num_people):
-        initial_people.append(Person())
+    for i in range(NUM_PEOPLE):
+        TOTAL_PEOPLE.append(Person())
 
-    Model.get().sim_objs += initial_people
+    Model.get().sim_objs += TOTAL_PEOPLE
 
     Controller().run()
 

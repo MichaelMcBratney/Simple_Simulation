@@ -4,8 +4,9 @@
 import random, datetime
 import os
 from .sim_obj import SimObj
-from definitions import RESOURCES_DIR, DEATH_PROBS, CHANCE_OF_DEATH
+from definitions import RESOURCES_DIR, DEATH_PROBS, CHANCE_OF_DEATH, TOTAL_PEOPLE
 from pathlib import Path
+from collections import Iterable
 
 
 class Person(SimObj):
@@ -20,19 +21,14 @@ class Person(SimObj):
         #Initialize age
         self.age = age
 
-        #Calculate name
-        if name:
-            self.name = name
-        else:
-            self.name = self.pickName(self.gender)
-
         # If the parameter, "genes" is specified, the information in
         # the parameter will be translated and assigned to the person class's instances.
         # Else both the genes and the translated assigned instances will be randomly generated.
         if genes:
             self.genes = genes
-            self.gender = possible_genders[genes[0]]
-            self.ethnicity = possible_ethnicities[genes[1]]
+            #print(self.genes) Debugging
+            self.gender = genes[0]
+            self.ethnicity = genes[1]
             self.reproductive_age = genes[2]
             self.adult_height = genes[3]
             self.adult_weight = genes[4]
@@ -63,7 +59,15 @@ class Person(SimObj):
             elif self.gender == "Female":
                 self.adult_weight = round(random.uniform(50,100), 1) # Weight is in Kilograms
 
-            self.genes = [gender, ethnicity, reproductive_age, adult_height, adult_weight]
+            self.genes = [self.gender, self.ethnicity, self.reproductive_age, self.adult_height, self.adult_weight]
+
+
+        #Calculate name
+        if name:
+            self.name = name
+        else:
+            self.name = self.pickName(self.gender)
+
 
         self.height = round(random.uniform(0.4, 0.6), 1) # Height is in Meters.    
         self.weight = round(random.uniform(2.5, 4.5), 1) # Weight is in Kilograms
@@ -147,6 +151,18 @@ class Person(SimObj):
             if cause_of_death:
                 self.kill(cause_of_death)
                 print(f'{self.name} has died due to {cause_of_death} at {self.get_age_string()} old.')
+
+        parent1 = random.choice(TOTAL_PEOPLE)
+        parent2 = random.choice(TOTAL_PEOPLE)
+        while parent1 == parent2:
+            parent2 = random.choice(TOTAL_PEOPLE)
+
+        if parent1.gender != parent2.gender:
+            if parent1.age >= parent1.reproductive_age and parent2.age >= parent2.reproductive_age:
+                if random.randint(0, 100) <= 2:
+                    TOTAL_PEOPLE.append(breed(parent1, parent2))
+                    print(f"{parent1.name} and {parent2.name} gave birth to a baby {TOTAL_PEOPLE[-1].gender} named {TOTAL_PEOPLE[-1].name}.")
+
             # Should only print age when getInfo is called
             #if self.age < 1:
             #    print(f'{self.name} is {round(self.age * 365)} days old.')
@@ -154,12 +170,14 @@ class Person(SimObj):
             #    print(f'{self.name} is {round(self.age, 1)} years old.')
 
 def breed(person1, person2):
+    #print(person1) Debugging
+    #print(person2)
     new_genes = []
-    testament = list(map(random.choice((lambda x: x, lambda x: x * -1)), [[] if is_iterable(i) else 1 if i % 2 == 0 else -1 for i in range(len(person1.genes))]))
+    testament = list(map(random.choice((lambda x: x, lambda x: x * -1)), [[] if isinstance(i, Iterable) else 1 if i % 2 == 0 else -1 for i in range(len(person1.genes))]))
     for aj, bj in zip(person1.genes, person2.genes):
-        if is_iterable(aj):
-            new_genes.append(breed(aj, bj))
-            continue
+        #if isinstance(aj, Iterable):               Dafuq is this?
+            #new_genes.append(breed(aj, bj))
+            #continue                               Someone please explain this to me...
         translator = {-1: aj, 1: bj}
         chosen_succesor = random.choice(testament)
         testament.pop(testament.index(chosen_succesor))
