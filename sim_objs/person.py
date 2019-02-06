@@ -3,8 +3,9 @@
 #  what are all of their characteristics?
 import random, datetime
 import os
+from model import Model
 from .sim_obj import SimObj
-from definitions import RESOURCES_DIR, DEATH_PROBS, CHANCE_OF_DEATH, TOTAL_PEOPLE
+from definitions import RESOURCES_DIR, DEATH_PROBS, CHANCE_OF_DEATH
 from pathlib import Path
 from collections import Iterable
 
@@ -152,16 +153,16 @@ class Person(SimObj):
                 self.kill(cause_of_death)
                 print(f'{self.name} has died due to {cause_of_death} at {self.get_age_string()} old.')
 
-        parent1 = random.choice(TOTAL_PEOPLE)
-        parent2 = random.choice(TOTAL_PEOPLE)
+        parent1 = random.choice(Model.get().sim_objs)
+        parent2 = random.choice(Model.get().sim_objs)
         while parent1 == parent2:
-            parent2 = random.choice(TOTAL_PEOPLE)
+            parent2 = random.choice(Model.get().sim_objs)
 
         if parent1.gender != parent2.gender:
             if parent1.age >= parent1.reproductive_age and parent2.age >= parent2.reproductive_age:
                 if random.randint(0, 100) <= 2:
-                    TOTAL_PEOPLE.append(breed(parent1, parent2))
-                    print(f"{parent1.name} and {parent2.name} gave birth to a baby {TOTAL_PEOPLE[-1].gender} named {TOTAL_PEOPLE[-1].name}.")
+                    Model.get().sim_objs.append(breed(parent1, parent2))
+                    print(f"{parent1.name} and {parent2.name} gave birth to a baby {Model.get().sim_objs[-1].gender} named {Model.get().sim_objs[-1].name}.")
 
             # Should only print age when getInfo is called
             #if self.age < 1:
