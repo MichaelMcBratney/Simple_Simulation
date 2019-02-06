@@ -1,43 +1,42 @@
-class Model():
-    """ Using singleton. See https://gist.github.com/pazdera/1098129 
-    
-    Singleton is used when we only want a single instance of this class across all of our code,
-    and importantly we do not want to accidently make a second instance. Therefore, whenever we
-    want to use Model we do:
+class Model:
+	""" Using singleton. See https://gist.github.com/pazdera/1098129
 
-    Model.get().WHATEVER
+	Singleton is used when we only want a single instance of this class across all of our code,
+	and importantly we do not want to accidently make a second instance. Therefore, whenever we
+	want to use Model we do:
 
-    This ensures that we only have a single instance
-    """
+	Model.get().WHATEVER
 
-    # This variable holds the true instance. Notice it is a class variable and
-    # not an instance variable
-    __instance = None
+	This ensures that we only have a single instance
+	"""
 
-    @staticmethod
-    def get():
-        """ Static access method. """
-        if Model.__instance == None:
-            Model()
-        return Model.__instance
+	# This variable holds the true instance. Notice it is a class variable and
+	# not an instance variable
+	__instance = None
 
-    def __init__(self):
-        """ Virtually private constructor. """
-        if Model.__instance != None:
-            raise Exception("This class is a singleton!")
+	@staticmethod
+	def get():
+		""" Static access method. """
+		if Model.__instance is None:
+			Model()
+		return Model.__instance
 
-        # If exception was not raised, this is the only instance of Model
-        Model.__instance = self
+	def __init__(self):
+		""" Virtually private constructor. """
+		if Model.__instance is not None:
+			raise Exception("This class is a singleton!")
 
-        # Initialize vars
-        self.time = 0
-        self.sim_objs = []
+		# If exception was not raised, this is the only instance of Model
+		Model.__instance = self
 
+		# Initialize vars
+		self.time = 0
+		self.sim_objs = []
 
-    def run(self, hours):
-        """update each simulated object by #hours worth of time"""
+	def run(self, hours):
+		"""update each simulated object by #hours worth of time"""
 
-        for _ in range(hours):
-            for obj in self.sim_objs: obj.update()
-            self.time += 1
-
+		for _ in range(hours):
+			for obj in self.sim_objs:
+				obj.update()
+			self.time += 1
