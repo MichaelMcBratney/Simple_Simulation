@@ -1,1 +1,1 @@
-from .person import Person
+import sim_objs.person
