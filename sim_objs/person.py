@@ -28,8 +28,8 @@ class Person(SimObj):
         if genes:
             self.genes = genes
             #print(self.genes) Debugging
-            self.gender = genes[0]
-            self.ethnicity = genes[1]
+            self.gender = possible_genders[genes[0]]
+            self.ethnicity = possible_ethnicities[genes[1]]
             self.reproductive_age = genes[2]
             self.adult_height = genes[3]
             self.adult_weight = genes[4]
@@ -174,15 +174,18 @@ def breed(person1, person2):
     #print(person1) Debugging
     #print(person2)
     new_genes = []
-    testament = list(map(random.choice((lambda x: x, lambda x: x * -1)), [[] if isinstance(i, Iterable) else 1 if i % 2 == 0 else -1 for i in range(len(person1.genes))]))
+    testament = list(map(random.choice((lambda x: x, lambda x: x * -1)), [1 if i % 2 == 0 else -1 for i in range(len(person1.genes))]))
     for aj, bj in zip(person1.genes, person2.genes):
         #if isinstance(aj, Iterable):               Dafuq is this?
             #new_genes.append(breed(aj, bj))
             #continue                               Someone please explain this to me...
-        translator = {-1: aj, 1: bj}
-        chosen_succesor = random.choice(testament)
-        testament.pop(testament.index(chosen_succesor))
-        new_genes.append(translator[chosen_succesor])
+        if type(aj) == list:
+            new_genes.append(breed(aj,bj))
+        else:
+            translator = {-1: aj, 1: bj}
+            chosen_succesor = random.choice(testament)
+            testament.pop(testament.index(chosen_succesor))
+            new_genes.append(translator[chosen_succesor])
     return Person(genes=new_genes)
 
 '''     
@@ -193,6 +196,9 @@ Test3 = Person()
 Test1.getInfo()
 Test2.getInfo()
 Test3.getInfo()
+
+Test4 = breed(Test1, Test2)
+Test4.getInfo()
 
 #Uncomment these lines to test Person Function.
 '''
