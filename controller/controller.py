@@ -47,11 +47,14 @@ class Controller:
 						count += 1
 				print(f'Population of the city is {count}')
 
-			elif command[0] == 'parent':
+			elif command[0] == 'parent':  # can be used to get info about parents
 				try:
 					parents = Model.get().sim_objs[int(command[1]) - 1].genes[Genes.PARENTS]
 					if parents is not None:
-						print(f"{parents['father'].state[State.NAME]} is {Model.get().sim_objs[int(command[1]) - 1].state[State.NAME]}'s father. {parents['mother'].state[State.NAME]} is {Model.get().sim_objs[int(command[1]) - 1].state[State.NAME]}'s mother.")  # can be used to get info about parents
+						print(f"{parents['father'].state[State.NAME]} is "
+						      f"{Model.get().sim_objs[int(command[1]) - 1].state[State.NAME]}'s father. "
+						      f"{parents['mother'].state[State.NAME]} is "
+						      f"{Model.get().sim_objs[int(command[1]) - 1].state[State.NAME]}'s mother.")
 					else:
 						print('This person is a child of God')
 				except (IndexError, ValueError):
